@@ -34,7 +34,10 @@ pagedimensions = {
   'A4-P' : (210, 297), # mm (portrait)
   'A4-L' : (297, 210), # mm (landscape)
   'A3-P' : (297, 420), # mm (portrait)
-  'A3-L' : (420, 297)  # mm (landscape)
+  'A3-L' : (420, 297),  # mm (landscape)
+  'LTR-P' : (215.9,279.4),
+  'LTR-L' : (279.4,215.9),
+
 }
 
 FixedThemeEntries = ["DEFAULT", "TYPE", "GROUP"]
@@ -873,11 +876,13 @@ def writePinGeneric(params, text=False):
       if (index < len(pin_func_types)):
         pinfunc = param_to_str(params,index+4)
         theme = pin_func_types[index]
-
+        #print(pinfunc,theme)
         if (pinfunc is not None):
-          X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight)
-          TextBox(X,Y, theme, pinfunc, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"])
-          BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
+          pinfuncs=pinfunc.split('|')
+          for pf in pinfuncs:
+              X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight)
+              TextBox(X,Y, theme, pf, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"])
+              BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
         elif (not linesettings["PACK"]):
           BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
       else:

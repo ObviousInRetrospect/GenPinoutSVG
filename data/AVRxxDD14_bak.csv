@@ -1,0 +1,192 @@
+LABELS,DEFAULT,TYPE,GROUP,Name,SPECIALL, GPIO, Analog 1, Analog 2, RTC,  Func 1, Func 2, Func 3
+BORDER COLOR, grey
+BORDER WIDTH, 2
+BORDER OPACITY, 1
+FILL COLOR, white, white, white, white, deepskyblue, black, yellow, green, cornflowerblue, plum, yellow, grey
+OPACITY, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+FONT , Rubik, , , Work Sans, Work Sans
+FONT SIZE , 25, , , 25, 25
+FONT COLOR , black, , , , , white
+FONT SLANT , normal , , , , , 
+FONT BOLD , 700 , , , 700 
+FONT STRETCH , normal 
+FONT OUTLINE , yellow , , , , blue
+FONT OUTLINE THICKNESS, 0.1
+BOXES, STD, , , PIN BOX, NAME BOX, SKEWED, SKEWED, SKEWED, SKEWED, SKEWED, SKEWED, SKEWED
+
+TYPE, IO, black, 1      
+TYPE, INPUT, black, 1   
+TYPE, OUTPUT, black, 1  
+
+WIRE, DIGITAL, black, 1, 5
+WIRE, PWM, black, 1, 5
+WIRE, ANALOG, black, 1, 5
+WIRE, HS-ANALOG, black, 1, 5
+WIRE, POWER, black, 1, 10
+
+#GROUP, ESP32 VSDIO, fuchsia, 0.5
+#GROUP, ESP32 RTC, chartreuse, 0.5
+#GROUP, ESP32 VIO, deepskyblue, 0.5
+#GROUP, SAML21 VDDANA, khaki, 0.5
+#GROUP, SAML21 VDDIO, khaki, 0.5
+GROUP, COMBINED, chocolate, 0.5
+#GROUP, POWER, black, 0
+#GROUP, NONE, grey, 0.1
+
+GROUP, POWER, orange, 0.5
+GROUP, GROUND, black, 0.5
+GROUP, PORT_PIN, green, 0.5
+GROUP, LEGACY_PIN, yellow, 0.5
+GROUP, AVR_DIG, blue, 0.5
+GROUP, AVR_ANA, blue, 0.5
+GROUP, AVR_VDDIO2, blue, 0.5
+
+
+BOX, STD, black, 1, white, 0, 1, 100,55,2,2,0,0
+BOX, PIN BOX, black, 1, white, 0, 1, 110, 55, 5, 5, -10, 0
+BOX, NAME BOX, black, 1, white, 0, 1, 125, 55, 5, 5, -10, 0
+BOX, SKEWED, black, 1, white, 0, 1, 125,55,5,5,-10,0
+BOX, PAGE BORDER, black, 1, white, 1, 50, 100,100,0,0,0,0
+BOX, DETAIL BOX, darkblue, 1, white, 0, 3, 250, 200, 15,15,0,0
+
+
+TEXT FONT, PowerPin, Dejavu Sans, 25, , black, normal, bold, normal
+TEXT FONT, Heading, BenchNine, 50, , black, normal, 700, normal
+    
+PAGE, A4-L
+DPI, 300
+
+DRAW
+
+# Load up the fonts we use
+GOOGLEFONT,"https://fonts.googleapis.com/css?family=BenchNine:300,400,700|Pragati+Narrow:700|Rubik|Ruslan+Display|Work+Sans:700,800,900"
+
+# Draw a border on the page
+BOX, PAGE BORDER, 0,0, 100%, 100%
+
+# Draw Title
+MESSAGE, 1700, 200, 175, Heading, 216, CENTER, TOP
+TEXT, black,black, AVRxxDD14, NL
+
+# draw chip outline
+BOX, DETAIL BOX, 1400, 400, 700, 800, , TOP,
+MESSAGE, 1550, 420, 100, Name, 72, LEFT, TOP
+TEXT, none, black, AVRxxDD14, NL
+MESSAGE, 1450, 1170, 100, Name, 36, LEFT, TOP
+TEXT, none, black, github.com/SpenceKonde/DxCore, NL
+
+MESSAGE, 1425, 500, 100, Name, 48, LEFT, TOP
+TEXT, none, black, 1 GND, NL
+TEXT, none, black, 2 !RST(PF6), NL
+TEXT, none, black, 3 UPDI(PF7), NL
+TEXT, none, black, 4 PIN_PA0, NL
+TEXT, none, black, 5 PIN_PA1, NL
+TEXT, none, black, 6 PIN_PC1, NL
+TEXT, none, black, 7 PIN_PC2, NL
+
+MESSAGE, 2075, 500, 100, Name, 48, RIGHT, TOP
+TEXT, none, black, VDD 14, NL
+TEXT, none, black, PIN_PD7 13, NL
+TEXT, none, black, PIN_PD6 12, NL
+TEXT, none, black, PIN_PD5 11, NL
+TEXT, none, black, PIN_PD4 10, NL
+TEXT, none, black, VDDIO2 9, NL
+TEXT, none, black, PIN_PC3 8, NL
+
+
+# Cut out the Battery pins for labeling
+#BOX, DETAIL BOX, 1370, 2430, 325, 410, , TOP,Battery Connector
+#IMAGE,Resources/TopView-FLAT-Transparent-R110.png, 1536, 2660, , , 0, 80, 375, 275, -90
+#ICON,Resources/warning.svg,1300,2665,25%,25%
+
+# Left Side Pins
+ANCHOR, 1370,455
+PINSET, LEFT, PACKED, CENTER, CENTER, 100, 30, 45, 60, 10, 0
+PINTEXT, POWER, IO, POWER , GND, PowerPin, Ground
+PIN, DIGITAL , INPUT, ,PF6,RST,,,,,,,
+PIN, DIGITAL , IO, ,PF7,UPDI
+PIN, DIGITAL , IO, ,PA0,XTAL1,GPIO34,ADC1:6,,RTC:04,,,
+PIN, DIGITAL , IO, ,PA1,XTAL2,GPIO35,ADC1:7,,RTC:05,,,
+PIN, ANALOG , IO, ,PC1,32K XP,GPIO32,ADC1:4,TOUCH9,RTC:09,,,
+PIN, ANALOG , IO, ,PC2,32K XN,GPIO33,ADC1:5,TOUCH8,RTC:08,,,
+
+
+# Right Side Pins
+ANCHOR, 2135,455
+PINSET, RIGHT, PACKED, CENTER, CENTER, 100, 30, 45, 60, 10, 0
+PINTEXT, POWER, IO, POWER , VDD , PowerPin,"1.8V-5.5V"
+PIN, ANALOG, IO, ,PD7,GPIO23,GPIO23,,,,VSPID,
+PIN, PWM, IO, ,PD6,U0TXD\\nPA01,GPIO01\\nEXTINT:1,,,,U0TXD\\nSCOM1:1,CLK:OUT3\\nTCC2:WO1
+PIN, PWM, IO, ,PD5,U0RXD\\nPA00,GPIO03\\nEXTINT:0,,,,U0RXD\\nSCOM1:0,CLK:OUT2\\nTCC2:WO0
+PIN, DIGITAL, IO, ,PD4,GPIO19,GPIO19,,,,VSPIQ,,EMAC\\nTXD0
+PINTEXT, POWER, IO, POWER , VDDIO2 , PowerPin,"1.8V-5.5V"
+PIN, DIGITAL, IO, ,PC3,GPIO5,GPIO5,,,,VSPICS0,,EMAC\\nRXCLK
+
+
+
+# Key
+BOX, DETAIL BOX, 200, 1500, 650, 800, , TOP, KEY
+
+ANCHOR, 250,1550
+PINSET, RIGHT, PACKED, CENTER, CENTER, 74.75, 30, 45, 60, 10, 0
+#PINTEXT, POWER, OUTPUT, POWER, "...", PowerPin, Power Output Pin
+#PINTEXT, POWER, IO, POWER , "...", PowerPin, Power IO Pin
+#PINTEXT, DIGITAL, IO, ESP32 VIO, "...", PowerPin, ESP32 DIGITAL GPIO
+#PINTEXT, ANALOG, INPUT, ESP32 RTC, "...", PowerPin, ESP32 Analog Input Pin
+#PINTEXT, ANALOG, IO, ESP32 RTC, "...", PowerPin, ESP32 Analog IO Pin
+#PINTEXT, PWM, IO, COMBINED, "...", PowerPin, Shared Hardware PWM Pin
+#PINTEXT, ANALOG, IO, COMBINED, "...", PowerPin, Shared Analog IO Pin
+#PINTEXT, DIGITAL, IO, SAML21 VDDIO, "...", PowerPin, SAML21 GPIO
+#PINTEXT, PWM, IO, SAML21 VDDIO, "...", PowerPin, SAML21 Hardware PWM Pin
+#PINTEXT, HS-ANALOG, IO, SAML21 VDDIO, "...", PowerPin, SAML21 Highspeed Analog Pin
+
+# Blurb
+BOX, DETAIL BOX, 1000, 1550, 1750, 875, , TOP, Features
+MESSAGE, 1100, 1650, 35, Name, 26, LEFT, TOP
+TEXT, none, black, ESP32-MAXIO by Sakura Industries Limited, NL
+TEXT, none, black, , NL
+TEXT, none, black, ESP32 Wrover-i Module, NL
+TEXT, none, black, * CPU : 2 x Xtensa 32-bit LX6 @ 240Mhz, NL
+TEXT, none, black, * SRAM : 520KB, NL
+TEXT, none, black, * Flash :  16MB, NL
+TEXT, none, black, * PSRAM :   8MB, NL
+TEXT, none, black, * WiFi : 2.4Ghz 802.11 b/g/n, NL
+TEXT, none, black, * Bluetooth : v4.2 BR/EDR and BLE, NL
+TEXT, none, black, * ADC : 12-bit SAR ADC up to 18 channels @ 6Khz, NL
+TEXT, none, black, * DAC : 8-bit x 2 @ 6Khz, NL
+TEXT, none, black, * TOUCH : 10 x Capacitive touch sensors, NL
+TEXT, none, black,"* SPI:4, I2S:2, I2C:2, UART:3, CAN 2.0:1 ", NL
+TEXT, none, black, * SD/SDIO/CE-ATA/MMC/eMMC host controller, NL
+TEXT, none, black, * SDIO/SPI slave controller, NL
+TEXT, none, black, * Ethernet MAC interface, NL
+TEXT, none, black,"* Infrared remote controller (TX/RX x 8)", NL
+TEXT, none, black, * Motor & LED PWM, NL
+TEXT, none, black, * Termperature and Hall effect Sensors, NL
+TEXT, none, black, , NL
+TEXT, none, black, BOOTLOADER, NL
+TEXT, none, black, * Simulated Thumb Drive, NL
+
+
+MESSAGE, 1925, 1650, 35, Name, 26, LEFT, TOP
+TEXT, none, black, , NL
+TEXT, none, black, , NL
+TEXT, none, black, Microchip SAML21 IO Coprocessor, NL
+TEXT, none, black, * CPU : ARM Cortex M0+ @ 48Mhz, NL
+TEXT, none, black, * SRAM : 40KB, NL
+TEXT, none, black, * FLASH : 264KB, NL
+TEXT, none, black, * Ultra Low Power, NL
+TEXT, none, black, * Timers : 6, NL
+TEXT, none, black, * USB Interface : Device & Host, NL
+TEXT, none, black, * AES Engine & True Random Number Generator, NL
+TEXT, none, black, * 4 x Configurable Custom Logic (CCL) (LUTs), NL
+TEXT, none, black, * 6 x SERCOMs (UART/SPI/I2C), NL
+TEXT, none, black, * ADC 12/16 Bit @ 1Msps (10 Channels), NL
+TEXT, none, black, * DAC 12 Bit @ 1Msps (2 Channels), NL
+TEXT, none, black, * 3 x OPAMPS, NL
+TEXT, none, black, * 2 x Analog Comparators, NL
+TEXT, none, black, * Real Time Clock, NL
+TEXT, none, black, , NL
+TEXT, none, black, , NL
+TEXT, none, black, , NL
+TEXT, none, black, STATUS LEDS, NL
+TEXT, none, black, * 4 x RGB Status Leds, NL
