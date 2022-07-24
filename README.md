@@ -3,6 +3,8 @@
 This repository contains a program to produce pinout SVG files from a CSV file
 source file of pin definitions and other graphical/format commands.
 
+Note: this fork introduces support for | within a field to split the contents into multiple boxes of the same style.
+
 This program was inspired by [Graphical Datasheets](https://github.com/sparkfun/Graphical_Datasheets)
 
 ## How To Use
