@@ -281,7 +281,7 @@ def GetBoxTheme(theme, entry, default):
   return GetTheme(boxtheme, entry, default)
 
 # Creates colored blocks and text for fields
-def TextBox(X, Y, theme, contents, justX="CENTER", justY="CENTER", W=None, H=None):
+def TextBox(X, Y, theme, contents, justX="CENTER", justY="CENTER", W=None, H=None, rotate=0):
     global dwg
     global themes
 
@@ -334,6 +334,9 @@ def TextBox(X, Y, theme, contents, justX="CENTER", justY="CENTER", W=None, H=Non
         ))
     if (skew != 0):
       rect.skewX(skew)
+    if (rotate != 0):
+      rect.rotate(rotate)
+    
 
     # Text
     if (fontoutthick > 0):
@@ -550,6 +553,27 @@ def SetPinGroup(row):
   return True
 
 def DefineBox(params):
+  global themes
+  boxname = param_to_str(params,1)
+  if (boxname is None):
+    print("Error: Must specify box name")
+    return False
+  themeentry = "BOX_"+boxname
+  themes[themeentry] = {}
+  themes[themeentry]["BORDER COLOR"] = param_to_str(params,2)
+  themes[themeentry]["BORDER OPACITY"] = param_to_float(params,3)
+  themes[themeentry]["FILL COLOR"] = param_to_str(params,4)
+  themes[themeentry]["OPACITY"] = param_to_float(params,5)
+  themes[themeentry]["BORDER WIDTH"] = param_to_int(params,6)
+  themes[themeentry]["WIDTH"]       = param_to_int(params,7)
+  themes[themeentry]["HEIGHT"]      = param_to_int(params,8)
+  themes[themeentry]["CORNER RX"]   = param_to_int(params,9)
+  themes[themeentry]["CORNER RY"]   = param_to_int(params,10)
+  themes[themeentry]["SKEW"]        = param_to_int(params,11)
+
+  return True
+
+def DefineChip45(params):
   global themes
   boxname = param_to_str(params,1)
   if (boxname is None):
@@ -1054,6 +1078,53 @@ def drawBox(params):
 
   return ok
 
+#for now this is a copy-paste of drawBox that passes rotate and Chip45 uses box themes
+#this will eventually do more intelligent things and diverge
+def drawChip45(params):
+  global themes
+
+  ok = True
+  theme = param_to_str(params,1)
+  X = param_to_size(params,2)
+  Y = param_to_size(params,3)
+  Width = param_to_size(params,4)
+  Height = param_to_size(params,5)
+  justifyX   = param_to_str(params,6)
+  justifyY   = param_to_str(params,7)
+  message = param_to_str(params,8)
+
+  pagedimensions = GetPageDimensions()
+
+  if (Width is not None) and (Width < 1):
+      Width = round(get_size(Width,pagedimensions[1][0]))
+  if (Height is not None) and (Height < 1):
+      Height = round(get_size(Height,pagedimensions[1][1]))
+
+  if (theme is None):
+    print("Box Theme name parameter missing!")
+    ok = False
+
+  if (X is None):
+    print("Box X Location missing!")
+    ok = False
+
+  if (Y is None):
+    print("Box Y Location missing!")
+    ok = False
+
+  if ((justifyX is not None) and (justifyX not in VALIDJUSTIFYX)):
+    print("ERROR: <Justify X> must be one of {}".format(VALIDJUSTIFYX))
+    ok = False
+
+  if ((justifyY is not None) and (justifyY not in VALIDJUSTIFYY)):
+    print("ERROR: <Justify Y> must be one of {}".format(VALIDJUSTIFYY))
+    ok = False
+
+  if (ok):
+    TextBox(X, Y, "BOX_"+theme, message, justX=justifyX, justY=justifyY, W=Width, H=Height,rotate=-45)
+
+  return ok
+  
 def DefineFont(params):
   global themes
   fontname = param_to_str(params,1)
@@ -1101,6 +1172,7 @@ csvCommands = {
     "WIRE"           : SetWireType,
     "GROUP"          : SetPinGroup,
     "BOX"            : DefineBox,
+    "CHIP45"         : DefineChip45,
     "TEXT FONT"      : DefineFont,
   },
   "DRAW" : {
@@ -1112,6 +1184,7 @@ csvCommands = {
     "PIN"         : writePins,
     "PINTEXT"     : writePinText,
     "BOX"         : drawBox,
+    "CHIP45"      : drawChip45,
     "MESSAGE"     : StartTextMessage,
     "TEXT"        : writeText,
     "END MESSAGE" : EndTextMessage,
