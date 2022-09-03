@@ -28,6 +28,7 @@ from pprint import pprint
 import urllib.request
 import math
 import traceback
+import json
 
 ################################################## GLOBAL VARIABLES ########################################
 pagedimensions = {
@@ -674,8 +675,11 @@ def StartPinSet(params):
 
   return valid
 
-def incOffsetX(X,side,theme):
-  XSpan = linesettings["GAP"] + GetBoxTheme(theme,"Width",0)
+def incOffsetX(X,side,theme, W=None):
+  if not W:
+    XSpan = linesettings["GAP"] + GetBoxTheme(theme,"Width",0)
+  else:
+    XSpan = linesettings["GAP"] + W
   if "LEFT" in side:
     X = X - XSpan
   elif "RIGHT" in side:
@@ -815,19 +819,21 @@ def printPin(pintype, wire, pingroup):
 def writePinGeneric(params, text=False):
   global OffsetY
 
-  def getPinBoxXY(BoxOffsetX, theme, LineHeight):
+  def getPinBoxXY(BoxOffsetX, theme, LineHeight, W=None):
       
     global OffsetX
     global OffsetY
     global AnchorX
     global AnchorY
     global linesettings
+    if not W:
+        W=GetBoxTheme(theme,"Width",0)
 
     X = AnchorX+OffsetX+BoxOffsetX
     # On the Left side we need to pre-decrement the X coordinate
     # otherwise we align to the wrong box edge.
     if "LEFT" in linesettings["SIDE"]:
-      X = X - GetBoxTheme(theme,"Width",0)
+      X = X - W
 
     Y = AnchorY+OffsetY
     BoxHeight = GetBoxTheme(theme,"Height", 0)
@@ -904,9 +910,21 @@ def writePinGeneric(params, text=False):
         if (pinfunc is not None):
           pinfuncs=pinfunc.split('|')
           for pf in pinfuncs:
-              X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight)
-              TextBox(X,Y, theme, pf, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"])
-              BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
+              #adjust the width based on the text length
+              my_w=None
+              if len(pf)<=3 and GetBoxTheme(theme,"Width", 0)>100:
+                 my_w=100
+              elif len(pf)==1 and GetBoxTheme(theme,"Width", 0)>100:
+                 my_w=45
+              elif len(pf)<=4 and GetBoxTheme(theme,"Width", 0)>100:
+                 my_w=120
+              elif len(pf)<=5 and GetBoxTheme(theme,"Width", 0)>100:
+                 my_w=130
+              elif len(pf)>7 and GetBoxTheme(theme,"Width", 0)>100:
+                 my_w=200
+              X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight,W=my_w)
+              TextBox(X,Y, theme, pf, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"],W=my_w)
+              BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme,W=my_w)
         elif (not linesettings["PACK"]):
           BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
       else:
