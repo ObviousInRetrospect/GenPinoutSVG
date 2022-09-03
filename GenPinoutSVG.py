@@ -922,6 +922,13 @@ def writePinGeneric(params, text=False):
                  my_w=130
               elif len(pf)>7 and GetBoxTheme(theme,"Width", 0)>100:
                  my_w=200
+              elif len(pf)>9 and GetBoxTheme(theme,"Width", 0)>100:
+                 my_w=300
+              if my_w:
+                 if pf.find('.')!=-1 and len(pf)<8:
+                    my_w -=5
+                 if pf.find(',')!=-1:
+                    my_w -=15
               X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight,W=my_w)
               TextBox(X,Y, theme, pf, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"],W=my_w)
               BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme,W=my_w)
