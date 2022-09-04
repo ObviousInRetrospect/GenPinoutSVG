@@ -6,7 +6,7 @@ source file of pin definitions and other graphical/format commands.
 ## Changes in this fork
 * support for | within a field to split the contents into multiple boxes of the same style.
 * CHIP45 command which is identical to box except the result is rotated 45 degrees. This is likley to change in the future. The purpose of this command is to draw a square chip with pins on 4 sides at an angle.
-* very limited automatic sizing for pin boxes assuming a font size of 35. This was designed for signal names between 1 and 12 characters. But if your box sizes are being ignored thats why. Should add a flag to turn it on/off.
+* Automatic sizing of pin boxes (pip install pycairo for it to be accurate). Enabled by setting the width of a box to 0.
 * plumbed a W=None default paramater to a few more functions to allow width to be overriden
 * pintype of NO_TRIANGLE will suppress the leading triangle for a pin (intended for continuations and legends)
 

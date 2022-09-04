@@ -41,6 +41,22 @@ pagedimensions = {
 
 }
 
+def textwidth(text, theme):
+    font         = GetTheme(theme,"Font",'sans-serif')
+    fontsize     = GetTheme(theme,"Font Size",10)
+    try:
+        import cairo
+    except:
+        print("need cairo using bad font guess")
+        return len(str) * fontsize
+    surface = cairo.SVGSurface('undefined.svg', GetPageDimensions()[1][0], 200)
+    cr = cairo.Context(surface)
+    cr.select_font_face(font, cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+    cr.set_font_size(fontsize)
+    xbearing, ybearing, width, height, xadvance, yadvance = cr.text_extents(text)
+    #print("WIDTH",font,fontsize,text,width)
+    return math.ceil(width)
+
 FixedThemeEntries = ["DEFAULT", "TYPE", "GROUP"]
 
 svg_filename = None
@@ -872,6 +888,10 @@ def writePinGeneric(params, text=False):
     fontslant    = GetTheme(msgtheme,"Font Slant","normal")
     fontbold     = GetTheme(msgtheme,"Font Bold","normal")
     fontstretch  = GetTheme(msgtheme,"Font Stretch","normal")
+    my_w=None
+    theme = pin_func_types[0]
+    if GetBoxTheme(theme,"Width", 0)==0 and label:
+      my_w = 30+textwidth(label,theme)
 
     if "LEFT" in linesettings["SIDE"]:
       xanchor = "end"
@@ -882,14 +902,14 @@ def writePinGeneric(params, text=False):
     if (label is not None):
       theme = pin_func_types[0]
 
-      X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight)
+      X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight,W=my_w)
 
-      TextBox(X,Y, theme, label, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"])
+      TextBox(X,Y, theme, label, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"],W=my_w)
       if "RIGHT" in linesettings["SIDE"]:
-        BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
+        BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme,W=my_w)
 
     if (message is not None) and (message != ""):
-      X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight)
+      X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight,W=my_w)
 
       if "LEFT" in linesettings["SIDE"]:
         X = X - linesettings["GAP"]
@@ -903,6 +923,7 @@ def writePinGeneric(params, text=False):
         font_stretch = fontstretch,
         text_anchor=xanchor))   
   else:
+    my_name=None
     for index, item in enumerate(params[4:]):
       if (index < len(pin_func_types)):
         pinfunc = param_to_str(params,index+4)
@@ -911,28 +932,18 @@ def writePinGeneric(params, text=False):
         if (pinfunc is not None):
           pinfuncs=pinfunc.split('|')
           for pf in pinfuncs:
+              if not my_name:
+                my_name=pf
               #adjust the width based on the text length
               my_w=None
-              if len(pf)<=3 and GetBoxTheme(theme,"Width", 0)>100:
-                 my_w=100
-              elif len(pf)==1 and GetBoxTheme(theme,"Width", 0)>100:
-                 my_w=45
-              elif len(pf)<=4 and GetBoxTheme(theme,"Width", 0)>100:
-                 my_w=120
-              elif len(pf)<=5 and GetBoxTheme(theme,"Width", 0)>100:
-                 my_w=130
-              elif len(pf)>7 and GetBoxTheme(theme,"Width", 0)>100:
-                 my_w=200
-              elif len(pf)>9 and GetBoxTheme(theme,"Width", 0)>100:
-                 my_w=300
-              if my_w:
-                 if pf.find('.')!=-1 and len(pf)<8:
-                    my_w -=5
-                 if pf.find(',')!=-1:
-                    my_w -=15
+              if GetBoxTheme(theme,"Width", 0)==0:
+                my_w = 15+textwidth(pf,theme)
               X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight,W=my_w)
+              
               TextBox(X,Y, theme, pf, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"],W=my_w)
               BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme,W=my_w)
+              if (X<0 or (X+my_w)>GetPageDimensions()[1][0]):
+                print(my_name, pf,"PD:",GetPageDimensions()[1][0],X,Y,my_w,BoxOffsetX)
         elif (not linesettings["PACK"]):
           BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
       else:
