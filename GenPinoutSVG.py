@@ -877,7 +877,13 @@ def writePinGeneric(params, text=False):
   # printPin - Draw the Pin Icon and Leader line
   BoxOffsetX = printPin(pintype, wire, pingroup)
   LineHeight = linesettings["LINESTEP"]
-
+  
+  my_name = None #used for messages about autowrap
+  XO0 = None #initial x offset
+  YO0 = None #initial y offset
+  BH = None #box height
+  did_wrap = False
+  YA = 0 #adjustments made to y by autowrapping (so they can be backed out of the increment)
   if text:
     label    = param_to_str(params,4)
     msgtheme = param_to_str(params,5)
@@ -923,7 +929,6 @@ def writePinGeneric(params, text=False):
         font_stretch = fontstretch,
         text_anchor=xanchor))   
   else:
-    my_name=None
     for index, item in enumerate(params[4:]):
       if (index < len(pin_func_types)):
         pinfunc = param_to_str(params,index+4)
@@ -932,18 +937,32 @@ def writePinGeneric(params, text=False):
         if (pinfunc is not None):
           pinfuncs=pinfunc.split('|')
           for pf in pinfuncs:
-              if not my_name:
-                my_name=pf
+              if not my_name: #at the start of a pin, collect all the initial data
+                my_name = pf
+                XO0 = BoxOffsetX
+                YO0 = OffsetY
+                BH = GetBoxTheme(theme,"Height", 0)
               #adjust the width based on the text length
               my_w=None
               if GetBoxTheme(theme,"Width", 0)==0:
                 my_w = 15+textwidth(pf,theme)
               X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight,W=my_w)
-              
+              my_w2 = my_w #width either from autogen or from the box
+              if not my_w2:
+                my_w2 = GetBoxTheme(theme,"Width", 0)
+              if (X<0 or (X+my_w2)>GetPageDimensions()[1][0]): #if out of bounds
+                if BH+5+YA <=linesettings["LINESTEP"]: #if there is enough room between lines for an extra wrapped row
+                    did_wrap = True
+                    BoxOffsetX = XO0  #go back to initial x pos
+                    YA += (BH+5) #move down by box_height +5
+                    OffsetY += YA
+                    X,Y = getPinBoxXY(BoxOffsetX, theme, LineHeight,W=my_w) #clobber X,Y with new values
+                    print("AUTOWRAP",my_name,pf)
+                else:
+                    print("OVERFLOW:",my_name, pf,"PD:",GetPageDimensions()[1][0],X,Y,my_w,BoxOffsetX)
               TextBox(X,Y, theme, pf, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"],W=my_w)
               BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme,W=my_w)
-              if (X<0 or (X+my_w)>GetPageDimensions()[1][0]):
-                print("OVERFLOW:",my_name, pf,"PD:",GetPageDimensions()[1][0],X,Y,my_w,BoxOffsetX)
+
         elif (not linesettings["PACK"]):
           BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
       else:
@@ -951,7 +970,7 @@ def writePinGeneric(params, text=False):
         ok = False
         break
 
-  OffsetY += linesettings["LINESTEP"]
+  OffsetY += (linesettings["LINESTEP"] - YA) #subtract out any Y adjustment made by autowrap
   return ok
 
 def writePins(params):
