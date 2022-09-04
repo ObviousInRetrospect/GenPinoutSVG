@@ -623,7 +623,7 @@ def moveAnchor(params):
 
   return True
 
-VALIDSIDES = [ "LEFT","RIGHT","TOP LEFT","TOP RIGHT","BOTTOM LEFT","BOTTOM RIGHT" ]
+VALIDSIDES = [ "LEFT","RIGHT","TOP LEFT","TOP RIGHT","BOTTOM LEFT","BOTTOM RIGHT","AUTOBREAK LEFT","AUTOBREAK RIGHT"]
 VALIDPACKING = [ "PACKED","UNPACKED" ]
 VALIDJUSTIFYX = ["LEFT", "CENTER", "RIGHT"]
 VALIDJUSTIFYY = ["TOP", "CENTER", "BOTTOM"]
@@ -747,16 +747,17 @@ def printPin(pintype, wire, pingroup):
                 (-triangle_center_shift,-triangle_edge_length/2),
                 (pinWidth/2,0)]
 
-    trianglegroup = dwg.g()
-    trianglegroup.add(dwg.polygon(
-      points=points,
-      stroke = "black",
-      fill = "black",
-      opacity = 1
-    ))
-
-    trianglegroup.translate(pinCenterX,pinCenterY)
-    dwg.add(trianglegroup)
+    if pintype != 'NO_TRIANGLE':
+        trianglegroup = dwg.g()
+        trianglegroup.add(dwg.polygon(
+          points=points,
+          stroke = "black",
+          fill = "black",
+          opacity = 1
+        ))
+        
+        trianglegroup.translate(pinCenterX,pinCenterY)
+        dwg.add(trianglegroup)
 
   pinWidth = groupWidth + leaderOffset
 
