@@ -943,7 +943,7 @@ def writePinGeneric(params, text=False):
               TextBox(X,Y, theme, pf, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"],W=my_w)
               BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme,W=my_w)
               if (X<0 or (X+my_w)>GetPageDimensions()[1][0]):
-                print(my_name, pf,"PD:",GetPageDimensions()[1][0],X,Y,my_w,BoxOffsetX)
+                print("OVERFLOW:",my_name, pf,"PD:",GetPageDimensions()[1][0],X,Y,my_w,BoxOffsetX)
         elif (not linesettings["PACK"]):
           BoxOffsetX = incOffsetX(BoxOffsetX,linesettings["SIDE"],theme)
       else:
