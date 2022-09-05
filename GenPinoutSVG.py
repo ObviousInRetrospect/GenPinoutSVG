@@ -513,6 +513,10 @@ PINTYPES = [
   "INPUT",
   "OUTPUT",
 ]
+PINTYPES.extend(['P'+str(i) for i in range(0,101)])
+PINTYPES.extend(['PR'+str(i) for i in range(0,101)])
+PINTYPES.extend(['Pr'+str(i) for i in range(0,101)])
+
 
 def SetPinType(row):
   global themes
@@ -749,7 +753,8 @@ def printPin(pintype, wire, pingroup):
       color = "black",
       opacity = 1
     ))
-  else:
+  elif not (pintype[0] == "P" and (pintype[1:].isnumeric() or ((pintype[1]=='R' or pintype[1]=='r') and len(pintype)>2 and pintype[2:].isnumeric()))):
+    #the case that is excluded will be handled later so things appear in the right order
     triangle_edge_length = (pinWidth/2) * math.sqrt(3)
     triangle_center_shift = pinWidth / 4
 
@@ -828,6 +833,32 @@ def printPin(pintype, wire, pingroup):
       leadergroup.translate(pinCenterX+(groupWidth/2),pinCenterY)
 
     dwg.add(leadergroup)
+    
+    #do this down here so it sits on top of the line
+    if (pintype[0] == "P" and (pintype[1:].isnumeric() or ((pintype[1]=='R' or pintype[1]=='r') and len(pintype)>2 and pintype[2:].isnumeric()))):
+      xpos=pinCenterX
+      my_t='BOX_PNUM'
+      my_w=textwidth("88",my_t)+10
+      my_num=pintype[1:]
+      angle=0
+      if pintype[1]=='R':
+        my_num=pintype[2:]
+        angle=45
+      if pintype[1]=='r':
+        my_num=pintype[2:]
+        angle=-45
+      #my_w=textwidth(pintype[1:],my_t)+10
+      if ("LEFT" in linesettings["SIDE"]):
+        xpos-=my_w
+      TextBox(xpos, pinCenterY-42/2, my_t, my_num, linesettings["JUSTIFY X"], linesettings["JUSTIFY Y"],W=my_w,rotate=angle)
+      #dwg.add(dwg.circle(
+      #  center=(pinCenterX, pinCenterY),
+      #  r = pinWidth,
+      #  stroke = "yellow",
+      #  color = "yellow",
+      #  opacity = 1
+      #))
+    
 
   if "LEFT" in linesettings["SIDE"]:
     return 0-pinWidth

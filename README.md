@@ -1,14 +1,18 @@
 # GenPinoutSVG
 
+This repository is a fork of https://github.com/stevenj/GenPinoutSVG and Steven Johnson wrote the vast majority of the code in it. ObviousInRetrospect added some minor features that he uses to generate the diagrams for DxCore and megaTinyCore.
+
 This repository contains a program to produce pinout SVG files from a CSV file
 source file of pin definitions and other graphical/format commands.
 
-## Changes in this fork
+# Changes in this fork
 * support for | within a field to split the contents into multiple boxes of the same style.
-* CHIP45 command which is identical to box except the result is rotated 45 degrees. This is likley to change in the future. The purpose of this command is to draw a square chip with pins on 4 sides at an angle.
+* CHIP45 command which is identical to box except the result is rotated 45 degrees. This is under development and likley to change in the future. The purpose of this command is to draw a square chip with pins on 4 sides at an angle. That allows all the text to be horizontal
 * Automatic sizing of pin boxes (pip install pycairo for it to be accurate). Enabled by setting the width of a box to 0.
 * plumbed a W=None default paramater to a few more functions to allow width to be overriden
 * pintype of NO_TRIANGLE will suppress the leading triangle for a pin (intended for continuations and legends)
+* automatic wrapping of pin lines that go off the page as long as the spacing allows it. warning messages when this happens.
+* You can use any of P# (P1...P100), PR#, Pr# for a PINTYPE if you define the box class PNUM. These pin types will render a PNUM containing the relevent number box in place of the circle at the end of a pin. PR# (PR1..PR100) will rotate the box 45 degrees. Pr# will rotate -45.
 
 
 This program was inspired by [Graphical Datasheets](https://github.com/sparkfun/Graphical_Datasheets)
